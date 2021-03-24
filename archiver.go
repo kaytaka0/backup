@@ -2,6 +2,7 @@ package backup
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 var ZIP Archiver = (*zipper)(nil)
 
 type Archiver interface {
+	DestFmt() func(int64) string
 	Archive(src, dest string) error
 }
 
@@ -45,4 +47,10 @@ func (z *zipper) Archive(src, dest string) error {
 		io.Copy(f, in)
 		return nil
 	})
+}
+
+func (z *zipper) DestFmt() func(int64) string {
+	return func(i int64) string {
+		return fmt.Sprintf("%d.zip", i)
+	}
 }
